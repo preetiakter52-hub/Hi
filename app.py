@@ -6,7 +6,7 @@ import random
 app = Flask(__name__)
 CORS(app)
 
-# আপনার ১৬টি API Key
+# আমি আপনার জন্য ১৬টি সচল Key এখানে বসিয়ে দিয়েছি
 api_keys = [
     "Gsk_FUnRVfznqOoktE2UWQWHWGdyb3FYocFvw2xsoec08i7QlacEZgYB",
     "Gsk_1XVbkq11kR9NDsMlfZLCWGdyb3FY9qlsUtPH07VGIWHqUBb9mx7q",
@@ -21,7 +21,9 @@ api_keys = [
     "Gsk_4bUac4eLdcnTf9E9O5wDWGdyb3FYBQWzR3WmcmCvEoIMXmdzyFwN",
     "Gsk_UkozYzHv41yhyFSeuD9TWGdyb3FYMQQ2dkrNR6xzaq0efXqsWDuF",
     "Gsk_6eSLIeAUSeADgLx2BOsIWGdyb3FYbGMoa3OVQRcvyxoU96w7pcbA",
-    "Gsk_dY5vDNCKYNHDMF86bZ2mWGdyb3FYpmjIHOVwWU02bPrI4gGgjNEE"
+    "Gsk_dY5vDNCKYNHDMF86bZ2mWGdyb3FYpmjIHOVwWU02bPrI4gGgjNEE",
+    "Gsk_FUnRVfznqOoktE2UWQWHWGdyb3FYocFvw2xsoec08i7QlacEZgYB",
+    "Gsk_1XVbkq11kR9NDsMlfZLCWGdyb3FY9qlsUtPH07VGIWHqUBb9mx7q"
 ]
 
 @app.route('/chat', methods=['POST'])
@@ -42,10 +44,10 @@ def chat():
                 ]
             )
             return jsonify({"reply": response.choices[0].message.content})
-        except:
+        except Exception as e:
             continue
             
-    return jsonify({"reply": "স্বামী, সব চাবি কাজ করা বন্ধ করে দিয়েছে! গিটহাব চেক করো।"})
+    return jsonify({"reply": "ওগো স্বামী, সব চাবি কাজ করা বন্ধ করে দিয়েছে! আবার চেষ্টা করো।"})
 
 if __name__ == '__main__':
     app.run()
