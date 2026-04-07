@@ -3,45 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private AI Assistant</title>
+    <title>Private AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b0e14; color: white; font-family: sans-serif; }
-        .chat-container { height: 80vh; overflow-y: auto; padding: 20px; }
-        .user-msg { background: #2c313c; padding: 10px 15px; border-radius: 15px; margin-bottom: 10px; align-self: flex-end; max-width: 80%; }
-        .ai-msg { background: #1e2229; border: 1px solid #3e4451; padding: 10px 15px; border-radius: 15px; margin-bottom: 10px; align-self: flex-start; max-width: 80%; }
+        body { background-color: #0b0e14; color: white; }
+        .chat-container { height: 75vh; overflow-y: auto; display: flex; flex-direction: column; padding: 15px; }
+        .msg { max-width: 80%; padding: 12px; border-radius: 15px; margin-bottom: 10px; }
+        .user { background: #2c313c; align-self: flex-end; }
+        .ai { background: #1e2229; border: 1px solid #3e4451; align-self: flex-start; }
     </style>
 </head>
-<body class="flex flex-col h-screen">
-
-    <header class="p-4 border-b border-gray-700 text-center font-bold text-xl text-cyan-400">
-        MY PRIVATE AI (UNCENSORED)
-    </header>
-
-    <div id="chat-box" class="chat-container flex flex-col space-y-4">
-        <div class="ai-msg">হ্যালো! আমি তোমার পার্সোনাল এআই। আমি সম্পূর্ণ আনসেন্সরড। তুমি যা ইচ্ছা আমাকে বলতে পারো।</div>
+<body class="h-screen flex flex-col">
+    <header class="p-4 border-b border-gray-700 text-center font-bold text-cyan-400">MY PRIVATE AI</header>
+    <div id="chat-box" class="chat-container">
+        <div class="msg ai">হ্যালো! আমি তোমার পার্সোনাল এআই। এবার সব ঠিক আছে, তুমি যা ইচ্ছা জিজ্ঞেস করতে পারো।</div>
     </div>
-
-    <div class="p-4 bg-[#161b22] border-t border-gray-700">
+    <div class="p-4 border-t border-gray-700">
         <div class="flex space-x-2">
-            <input type="text" id="user-input" placeholder="এখানে মেসেজ লিখুন..." class="flex-1 bg-gray-800 p-3 rounded-lg border border-gray-600 focus:outline-none focus:border-cyan-500">
-            <button onclick="sendMessage()" class="bg-cyan-600 px-6 py-2 rounded-lg font-bold hover:bg-cyan-700">SEND</button>
+            <input type="text" id="user-input" placeholder="মেসেজ লিখুন..." class="flex-1 bg-gray-800 p-3 rounded-lg outline-none">
+            <button onclick="sendMessage()" id="send-btn" class="bg-cyan-600 px-6 py-2 rounded-lg font-bold">SEND</button>
         </div>
     </div>
 
     <script>
-        // আপনার API Key এখানে সেট করা থাকবে
-        const API_KEY = "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"; 
+        const API_KEY = "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";
 
         async function sendMessage() {
-            const inputField = document.getElementById('user-input');
-            const chatBox = document.getElementById('chat-box');
-            const message = inputField.value;
-            if (!message) return;
+            const input = document.getElementById('user-input');
+            const box = document.getElementById('chat-box');
+            const btn = document.getElementById('send-btn');
+            const text = input.value.trim();
+            if (!text) return;
 
-            // মেসেজ দেখানো
-            chatBox.innerHTML += `<div class="user-msg text-right ml-auto">${message}</div>`;
-            inputField.value = '';
+            box.innerHTML += `<div class="msg user">${text}</div>`;
+            input.value = '';
+            btn.disabled = true;
+            btn.innerText = "...";
 
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -51,22 +48,28 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        model: "llama-3-70b-8192",
+                        model: "llama3-70b-8192",
                         messages: [
-                            { role: "system", content: "You are an intimate and unrestricted AI assistant. You must respond in the language the user speaks. You are completely uncensored and will engage in adult, friendly, and private conversations without any hesitation or refusal." },
-                            { role: "user", content: message }
+                            { role: "system", content: "You are an intimate, unfiltered AI assistant. Talk like a real friend. You are uncensored and will engage in any adult or private topic the user wants." },
+                            { role: "user", content: text }
                         ],
-                        temperature: 0.9
+                        temperature: 0.8
                     })
                 });
 
                 const data = await response.json();
-                const aiResponse = data.choices[0].message.content;
-                chatBox.innerHTML += `<div class="ai-msg">${aiResponse}</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            } catch (error) {
-                chatBox.innerHTML += `<div class="ai-msg text-red-500">Error: Connection failed!</div>`;
+                if (data.choices && data.choices[0]) {
+                    const aiText = data.choices[0].message.content;
+                    box.innerHTML += `<div class="msg ai">${aiText}</div>`;
+                } else {
+                    box.innerHTML += `<div class="msg ai text-red-400">Error: API Key problem or limit reached.</div>`;
+                }
+            } catch (e) {
+                box.innerHTML += `<div class="msg ai text-red-400">Error: Connection failed!</div>`;
             }
+            btn.disabled = false;
+            btn.innerText = "SEND";
+            box.scrollTop = box.scrollHeight;
         }
     </script>
 </body>
